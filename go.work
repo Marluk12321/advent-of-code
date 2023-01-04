@@ -10,3 +10,4 @@ use ./2022/12/part_1
 use ./2022/12/part_2
 use ./2022/13/part_1
 use ./2022/13/part_2
+use ./2022/14/part_1
