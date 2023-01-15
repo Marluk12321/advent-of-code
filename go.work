@@ -18,3 +18,4 @@ use ./2022/16/part_1
 use ./2022/16/part_2
 use ./2022/17/part_1
 use ./2022/17/part_2
+use ./2022/18/part_1
