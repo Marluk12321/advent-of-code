@@ -32,6 +32,6 @@ func main() {
 	room := objects.MakeRoom(roomSize)
 	blockTypes := &objects.BlockTypes
 	jetPattern := simulation.MakeJetPattern(text)
-	simulation.Simulate(&room, blockTypes, &jetPattern, spawnLimit)
-	fmt.Println("Total height:", room.GetHeight())
+	height := simulation.CalcHeight(&room, blockTypes, &jetPattern, spawnLimit)
+	fmt.Println("Total height:", height)
 }

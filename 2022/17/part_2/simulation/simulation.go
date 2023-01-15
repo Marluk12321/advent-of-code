@@ -2,11 +2,10 @@ package simulation
 
 import (
 	"2022/17/part_2/objects"
-	"fmt"
 )
 
 func spawn(blockType objects.BlockType, room *objects.Room, jetPattern *JetPattern) objects.Block {
-	block := blockType(0, room.GetHeight())
+	block := blockType(0, len(room.Contents))
 	xOffset := 2
 	minXOffest := 0
 	maxXOffset := room.Width - block.Width
@@ -47,9 +46,33 @@ func fall(room *objects.Room, block *objects.Block) {
 	}
 }
 
-func Simulate(room *objects.Room, blockTypes *[5]objects.BlockType, jetPattern *JetPattern, spawnLimit int) {
+func extrapolateFinalHeight(states []State, cycle *Cycle, spawnLimit int) int {
+	heightPreCycle := states[cycle.startIndex].height
+	heightPostCycle := states[cycle.startIndex+cycle.length].height
+	heightPerCycle := heightPostCycle - heightPreCycle
+
+	spawnsSinceCycle := spawnLimit - cycle.startIndex
+	fullCycles := spawnsSinceCycle / cycle.length
+
+	spawnsRemaining := spawnsSinceCycle % cycle.length
+	heightRemaining := states[cycle.startIndex+spawnsRemaining].height - heightPreCycle
+
+	return heightPreCycle + fullCycles*heightPerCycle + heightRemaining
+}
+
+func CalcHeight(room *objects.Room, blockTypes *[5]objects.BlockType, jetPattern *JetPattern, spawnLimit int) int {
 	typeIndex := 0
+	var states []State
 	for i := 0; i < spawnLimit; i++ {
+		states = append(states, State{
+			jetPatternState:   jetPattern.index,
+			blockFactoryState: typeIndex,
+			height:            len(room.Contents),
+		})
+		if cycle, found := findCycle(states); found {
+			return extrapolateFinalHeight(states, &cycle, spawnLimit)
+		}
+
 		blockType := blockTypes[typeIndex]
 		block := spawn(blockType, room, jetPattern)
 		for {
@@ -61,10 +84,7 @@ func Simulate(room *objects.Room, blockTypes *[5]objects.BlockType, jetPattern *
 			}
 		}
 		room.Place(&block)
-
 		typeIndex = (typeIndex + 1) % len(blockTypes)
-		if i%10000000 == 0 {
-			fmt.Println(100*float32(i)/float32(spawnLimit), "%")
-		}
 	}
+	return len(room.Contents)
 }
