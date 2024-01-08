@@ -34,7 +34,7 @@ func toResource(text string) Resource {
 }
 
 func toRobot(resource Resource) Robot {
-	robot, found := robotForResource[resource]
+	robot, found := RobotForResource[resource]
 	if !found {
 		panic(resource)
 	}

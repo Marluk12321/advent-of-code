@@ -11,7 +11,7 @@ var (
 	ORE_COLLECTOR = Robot{Resource: ORE}
 )
 
-var robotForResource = map[Resource]Robot {
+var RobotForResource = map[Resource]Robot {
 	OPEN_GEODE: GEODE_CRACKER,
 	OBSIDIAN: OBSIDIAN_COLLECTOR,
 	CLAY: CLAY_COLLECTOR,

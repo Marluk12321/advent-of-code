@@ -2,9 +2,10 @@ package main
 
 import (
 	"2022/19/part_1/objects"
-	"2022/19/part_1/simulation"
+	"2022/19/part_1/search"
 	"bufio"
 	"os"
+	"time"
 )
 
 func openFile(path string) *os.File {
@@ -15,14 +16,14 @@ func openFile(path string) *os.File {
 	return file
 }
 
-func makeInitialState() simulation.State {
-	return simulation.State{
-		Robots:    simulation.Robots{objects.ORE_COLLECTOR: 1},
+func makeInitialState() search.State {
+	return search.State{
+		Robots:    search.Robots{objects.ORE_COLLECTOR: 1},
 		Resources: objects.Resources{},
-		Factory:   objects.Factory{IsProducing: false},
 	}
 }
 
+const SCORING_RESOURCE = objects.OPEN_GEODE
 const MINUTE_LIMIT = 24
 
 func main() {
@@ -39,14 +40,20 @@ func main() {
 
 	score := 0
 	initialState := makeInitialState()
+	startAll := time.Now()
 	for _, blueprint := range blueprints {
-		blueprintScore := simulation.FindBestScore(
+		start := time.Now()
+		blueprintScore := search.FindBestScore(
 			blueprint.ConstructionCosts,
-			initialState,
+			SCORING_RESOURCE,
 			MINUTE_LIMIT,
+			initialState,
 		)
-		println("ID:", blueprint.Id, "score:", blueprintScore)
+		end := time.Now()
+		println("ID:", blueprint.Id, "| score:", blueprintScore,
+				"| time:", end.Sub(start).String())
 		score += blueprint.Id * blueprintScore
 	}
-	println("Total score:", score)
+	endAll := time.Now()
+	println("Total score:", score, "| time:", endAll.Sub(startAll).String())
 }
