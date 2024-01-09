@@ -78,7 +78,9 @@ func (finder Finder) getBuildOptions(state State, remaining_minutes int) []objec
 			continue
 		}
 		resource := robot.Resource
-		if finder.maxCosts[resource] > state.Robots[robot] && canAfford(cost, state.Resources) {
+		maxRequiredResource := finder.maxCosts[resource] * remaining_minutes
+		totalToProduce := state.Resources[resource] + state.Robots[robot] * remaining_minutes
+		if totalToProduce < maxRequiredResource && canAfford(cost, state.Resources) {
 			options = append(options, robot)
 		}
 	}
@@ -99,17 +101,21 @@ func (finder *Finder) findBestScore(remaining_minutes int, state State) int {
 	}
 	finder.updateDominatingStates(remaining_minutes, state)
 	bestScore := 0
-	for _, robot := range finder.getBuildOptions(state, remaining_minutes) {
+	buildOptions := finder.getBuildOptions(state, remaining_minutes)
+	for _, robot := range buildOptions {
 		nextState := state.buildAndProduce(robot, finder.constructionCosts[robot])
 		score := finder.findBestScore(remaining_minutes-1, nextState)
 		if score > bestScore {
 			bestScore = score
 		}
 	}
-	nextState := state.produce()
-	score := finder.findBestScore(remaining_minutes-1, nextState)
-	if score > bestScore {
-		bestScore = score
+	if len(buildOptions) < len(finder.constructionCosts) {
+		// only build nothing if some robots are not buildable yet
+		nextState := state.produce()
+		score := finder.findBestScore(remaining_minutes-1, nextState)
+		if score > bestScore {
+			bestScore = score
+		}
 	}
 	return bestScore
 }
