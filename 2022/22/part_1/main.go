@@ -3,6 +3,7 @@ package main
 import (
 	"2022/22/part_1/board"
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -48,9 +49,13 @@ func main() {
 		}
 		if parsingMap {
 			row := board.BuildRow(line)
+			fmt.Println("Row:", row)
 			boardMap = append(boardMap, row)
 		} else {
 			instructions = board.BuildInstructions(line)
+			for _, instruction := range instructions {
+				fmt.Println("Instruction:", instruction)
+			}
 		}
 	}
 	file.Close()

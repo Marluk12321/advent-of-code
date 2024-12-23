@@ -34,6 +34,7 @@ func (instruction TurnInstruction) Apply(boardMap Map, state State) State {
 		Col:    state.Col,
 		Facing: state.Facing,
 	}
+	fmt.Println("Turning", state, instruction.turnDirection)
 	switch state.Facing {
 	case FACING_RIGHT:
 		switch instruction.turnDirection {

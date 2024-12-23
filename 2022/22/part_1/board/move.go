@@ -42,6 +42,7 @@ moveLoop:
 		case WALL:
 			break moveLoop
 		case OPEN:
+			fmt.Println("col:", relativeCol, "->", nextCol)
 			relativeCol = nextCol
 		default:
 			panic(tile)
@@ -77,6 +78,7 @@ moveLoopDown:
 		case WALL:
 			break moveLoopDown
 		case OPEN:
+			fmt.Println("row:", row, "->", nextRow)
 			row = nextRow
 		default:
 			panic(tile)
@@ -90,6 +92,7 @@ moveLoopDown:
 }
 
 func (instruction MoveInstruction) Apply(boardMap Map, state State) State {
+	fmt.Println("Moving", state, "by", instruction.moveBy)
 	switch state.Facing {
 	case FACING_RIGHT:
 		return moveHorizontally(boardMap, state, instruction.moveBy, 1)
