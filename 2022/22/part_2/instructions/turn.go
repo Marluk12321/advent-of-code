@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"2022/22/part_2/mapping"
+	"2022/22/part_2/util"
 	"fmt"
 )
 
@@ -10,7 +11,6 @@ type TurnDirection rune
 const (
 	RIGHT TurnDirection = 'R'
 	LEFT  TurnDirection = 'L'
-	BACK  TurnDirection = 'B'
 )
 
 func (turnDirection TurnDirection) String() string {
@@ -19,8 +19,6 @@ func (turnDirection TurnDirection) String() string {
 		return "Right"
 	case LEFT:
 		return "Left"
-	case BACK:
-		return "Back"
 	default:
 		panic(turnDirection)
 	}
@@ -35,19 +33,17 @@ func (instruction TurnInstruction) String() string {
 }
 
 func (instruction TurnInstruction) Apply(cube mapping.Cube, state mapping.State) mapping.State {
-	fmt.Println("Turning", state, instruction.turnDirection)
+	util.Debug(state, instruction)
 	nextFacing := state.Facing
 	switch instruction.turnDirection {
 	case LEFT:
 		nextFacing = nextFacing.Left()
 	case RIGHT:
 		nextFacing = nextFacing.Right()
-	case BACK:
-		nextFacing = nextFacing.Opposite()
 	default:
 		panic(instruction.turnDirection)
 	}
-	fmt.Println("Facing:", state.Facing, "->", nextFacing)
+	util.Debug("Facing:", state.Facing, "->", nextFacing)
 	return mapping.State{
 		Face: state.Face,
 		FacePosition: state.FacePosition.Copy(),

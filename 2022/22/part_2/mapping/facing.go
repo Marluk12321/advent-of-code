@@ -78,6 +78,17 @@ const (
 	DIFFERENCE_OPPOSITE
 )
 
+func (diff FacingDirectionDifference) Opposite() FacingDirectionDifference {
+	switch diff {
+	case DIFFERENCE_LEFT:
+		return DIFFERENCE_RIGHT
+	case DIFFERENCE_RIGHT:
+		return DIFFERENCE_LEFT
+	default:
+		return diff
+	}
+}
+
 func (direction FacingDirection) DiffTo(other FacingDirection) FacingDirectionDifference {
 	if direction == other {
 		return DIFFERENCE_NONE

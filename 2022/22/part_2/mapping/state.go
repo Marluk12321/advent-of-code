@@ -11,5 +11,6 @@ type State struct {
 func (state State) String() string {
 	return fmt.Sprint(
 		"State(face: ", state.Face,
-		", position on face: ", state.FacePosition, ", facing: ", state.Facing, ")")
+		", position on face: ", state.FacePosition,
+		", facing: ", state.Facing, ")")
 }

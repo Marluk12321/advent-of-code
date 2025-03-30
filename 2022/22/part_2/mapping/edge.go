@@ -8,9 +8,13 @@ var edgeStartCorner = map[FacingDirection]Position{
 }
 
 var haveOppositeStartCorner = map[[2]FacingDirection]bool{
+	{FACING_UP, FACING_UP}:  true,
 	{FACING_UP, FACING_RIGHT}:  true,
+	{FACING_DOWN, FACING_DOWN}: true,
 	{FACING_DOWN, FACING_LEFT}: true,
+	{FACING_RIGHT, FACING_RIGHT}:  true,
 	{FACING_RIGHT, FACING_UP}:  true,
+	{FACING_LEFT, FACING_LEFT}: true,
 	{FACING_LEFT, FACING_DOWN}: true,
 }
 
@@ -27,21 +31,31 @@ type Edge struct {
 	FaceDirection map[Face]FacingDirection
 }
 
-func (edge Edge) MakeOppositeState(state State) State {
-	edgeDirection := state.Facing
-	edgeStartPosition := edgeStartCorner[edgeDirection].Scale(edge.Size - 1)
-	positionOnEdge := state.FacePosition.Sub(edgeStartPosition)
-	distanceFromEdgeStart := positionOnEdge.ChebyshevSize()
+func calcDistanceFromEdgeStart(edgeDirection FacingDirection, edgeSize int, position Position) int {
+	edgeStart := edgeStartCorner[edgeDirection].Scale(edgeSize - 1)
+	edgeStartToPosition := position.Sub(edgeStart)
+	if edgeStartToPosition.Row != 0 && edgeStartToPosition.Col != 0 {
+		panic(position)
+	}
+	return edgeStartToPosition.ChebyshevSize()
+}
 
+func makeOppositePosition(edgeDirection, oppositeEdgeDirection FacingDirection, edgeSize int, position Position) Position {
+	distanceFromEdgeStart := calcDistanceFromEdgeStart(edgeDirection, edgeSize, position)
+	if haveOppositeStartCorner[[2]FacingDirection{edgeDirection, oppositeEdgeDirection}] {
+		distanceFromEdgeStart = edgeSize - 1 - distanceFromEdgeStart
+	}
+	oppositeEdgeStart := edgeStartCorner[oppositeEdgeDirection].Scale(edgeSize - 1)
+	oppositePositionOnEdge := edgeStep[oppositeEdgeDirection].Scale(distanceFromEdgeStart)
+	return oppositeEdgeStart.Add(oppositePositionOnEdge)
+}
+
+func (edge Edge) MakeOppositeState(state State) State {
 	oppositeFace := edge.OppositeFace[state.Face]
 	oppositeFacing := edge.FaceDirection[oppositeFace]
+	edgeDirection := state.Facing
 	oppositeEdgeDirection := oppositeFacing.Opposite()
-	if edgeDirection == oppositeEdgeDirection || haveOppositeStartCorner[[2]FacingDirection{edgeDirection, oppositeEdgeDirection}] {
-		distanceFromEdgeStart = edge.Size - 1 - distanceFromEdgeStart
-	}
-	oppositeEdgeStartPosition := edgeStartCorner[oppositeEdgeDirection].Scale(edge.Size - 1)
-	oppositePositionOnEdge := edgeStep[oppositeEdgeDirection].Scale(distanceFromEdgeStart)
-	oppositePosition := oppositeEdgeStartPosition.Add(oppositePositionOnEdge)
+	oppositePosition := makeOppositePosition(edgeDirection, oppositeEdgeDirection, edge.Size, state.FacePosition)
 	return State{
 		Face:         oppositeFace,
 		FacePosition: oppositePosition,

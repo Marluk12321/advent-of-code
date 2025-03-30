@@ -12,7 +12,7 @@ type Instruction interface {
 
 type Instructions []Instruction
 
-func flushBuffer(instructions *Instructions, numberBuffer *[]rune) {
+func buildMoveInstruction(instructions *Instructions, numberBuffer *[]rune) {
 	numberText := string(*numberBuffer)
 	number, err := strconv.Atoi(numberText)
 	if err != nil {
@@ -32,7 +32,7 @@ func BuildInstructions(text string) Instructions {
 		switch c {
 		case 'L':
 			if len(numberBuffer) > 0 {
-				flushBuffer(&instructions, &numberBuffer)
+				buildMoveInstruction(&instructions, &numberBuffer)
 			}
 			instruction := TurnInstruction{
 				turnDirection: LEFT,
@@ -40,7 +40,7 @@ func BuildInstructions(text string) Instructions {
 			instructions = append(instructions, instruction)
 		case 'R':
 			if len(numberBuffer) > 0 {
-				flushBuffer(&instructions, &numberBuffer)
+				buildMoveInstruction(&instructions, &numberBuffer)
 			}
 			instruction := TurnInstruction{
 				turnDirection: RIGHT,
@@ -51,7 +51,7 @@ func BuildInstructions(text string) Instructions {
 		}
 	}
 	if len(numberBuffer) > 0 {
-		flushBuffer(&instructions, &numberBuffer)
+		buildMoveInstruction(&instructions, &numberBuffer)
 	}
 	return instructions
 }

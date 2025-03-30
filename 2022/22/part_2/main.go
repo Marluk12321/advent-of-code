@@ -3,8 +3,8 @@ package main
 import (
 	"2022/22/part_2/instructions"
 	"2022/22/part_2/mapping"
+	"2022/22/part_2/util"
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -38,14 +38,14 @@ func run(cube mapping.Cube, instructions instructions.Instructions) mapping.Stat
 func main() {
 	board := mapping.Board{}
 	var instructionList instructions.Instructions
-	parsingMap := true
 
 	cubeSize, err := strconv.Atoi(os.Args[1])
 	if err != nil {
-		panic(err)
+		panic(os.Args[1])
 	}
 	file := openFile(os.Args[2])
 	scanner := bufio.NewScanner(file)
+	parsingMap := true
 	for scanner.Scan() {
 		line := strings.TrimSuffix(scanner.Text(), "\n")
 		if line == "" {
@@ -54,12 +54,12 @@ func main() {
 		}
 		if parsingMap {
 			row := mapping.BuildRow(line)
-			fmt.Println("Row:", row)
+			util.Debug("Row:", row)
 			board = append(board, row)
 		} else {
 			instructionList = instructions.BuildInstructions(line)
 			for _, instruction := range instructionList {
-				fmt.Println("Instruction:", instruction)
+				util.Debug("Instruction:", instruction)
 			}
 		}
 	}
@@ -69,6 +69,7 @@ func main() {
 	cube := mapping.BuildCube(board, cubeSize)
 	finalState := run(cube, instructionList)
 	end := time.Now()
+
 	faceOnBoard := cube.Faces[finalState.Face]
 	finalPosition := mapping.Position{
 		Row: faceOnBoard.Position.Row + finalState.FacePosition.Row,

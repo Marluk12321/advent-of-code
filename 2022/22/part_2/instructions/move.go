@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"2022/22/part_2/mapping"
+	"2022/22/part_2/util"
 	"fmt"
 )
 
@@ -18,8 +19,8 @@ func isOutsideFace(position mapping.Position, faceSize int) bool {
 }
 
 func moveToNextState(cube mapping.Cube, currentState mapping.State) mapping.State {
-	stepOffset := mapping.UnitSteps[currentState.Facing]
-	nextPosition := currentState.FacePosition.Add(stepOffset)
+	step := mapping.UnitSteps[currentState.Facing]
+	nextPosition := currentState.FacePosition.Add(step)
 	if isOutsideFace(nextPosition, cube.Size) {
 		faceOnBoard := cube.Faces[currentState.Face]
 		edge := faceOnBoard.Edges[currentState.Facing]
@@ -34,7 +35,7 @@ func moveToNextState(cube mapping.Cube, currentState mapping.State) mapping.Stat
 }
 
 func (instruction MoveInstruction) Apply(cube mapping.Cube, state mapping.State) mapping.State {
-	fmt.Println("Moving", state, "by", instruction.moveBy)
+	util.Debug(state, instruction)
 	currentState := state
 LOOP:
 	for i := 0; i < instruction.moveBy; i++ {
@@ -42,10 +43,10 @@ LOOP:
 		nextTile := cube.GetTile(nextState.Face, nextState.FacePosition)
 		switch nextTile {
 		case mapping.WALL:
-			fmt.Println("Wall at", nextState.Face, nextState.FacePosition)
+			util.Debug("Wall at", nextState.Face, nextState.FacePosition)
 			break LOOP
 		case mapping.OPEN:
-			fmt.Println("state:", currentState, "->", nextState)
+			util.Debug("Position:", currentState.FacePosition, "->", nextState.FacePosition)
 			currentState = nextState
 		default:
 			panic(nextTile)
