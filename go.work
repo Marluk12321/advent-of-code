@@ -1,4 +1,4 @@
-go 1.19
+go 1.26
 
 use ./2022/09/part_1
 use ./2022/09/part_2
@@ -28,3 +28,4 @@ use ./2022/21/part_1
 use ./2022/21/part_2
 use ./2022/22/part_1
 use ./2022/22/part_2
+use ./2022/23/part_1
